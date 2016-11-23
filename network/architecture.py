@@ -2,18 +2,17 @@ import random
 from network import neurons
 
 class parameter:
-	def __init__(self, threshold, init_weight_bounds, weight_ajdustors, activation_adjustors):
+	def __init__(self, threshold, init_weight_bounds, weight_ajdustors, activation_adjustors, intercon_diminishing):
 		self.threshold = threshold
 		self.init_lower_weight = init_weight_bounds[0]
 		self.init_upper_weight = init_weight_bounds[1]
-		
 		self.weight_boost = weight_ajdustors[0]
 		self.weight_penalty = weight_ajdustors[1]
 		self.weight_diminishing = weight_ajdustors[2]
 		self.activation_boost = activation_adjustors[0]
 		self.activation_penalty = activation_adjustors[1]
 		self.activation_diminishing = activation_adjustors[2]
-
+		self.intercon_diminishing = intercon_diminishing
 
 class topology:
 	def __init__(self, size):

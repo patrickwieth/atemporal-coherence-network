@@ -64,6 +64,7 @@ class connectron:
 	def activate(self, inputs):
 		while(len(inputs) > len(self.input_weights)):
 			self.input_weights.append(random.uniform(self.parameter.init_lower_weight, self.parameter.init_upper_weight))
+			
 
 		input_sum = 0
 		for i, value in enumerate(inputs):

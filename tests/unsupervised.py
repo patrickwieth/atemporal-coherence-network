@@ -131,7 +131,7 @@ def grid_search():
 			#print(parameter_list[i, 0], ": ", fitti)
 
 		# better parameter found? update...
-		if(max_fitness[1] > -1): 
+		if(parameter_list[i, 0] != max_fitness[0]): 
 			parameter_list[i, 0] = max_fitness[0]
 		# old parameter remains the best then search less broad but finer
 		else: 

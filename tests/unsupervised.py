@@ -56,7 +56,7 @@ def prepare_data():
 	return data
 
 def evaluate(data, i, j):
-	samples = 300
+	samples = 2000
 	fitness = 0
 
 	for k in range(samples):
@@ -104,7 +104,7 @@ def grid_search():
 	search_iterations = 10
 
 	def evaluate_fitness(net, data):
-		samples = 400
+		samples = 2000
 		fitness = 0
 		for k in range(samples):								
 			result = net.run(data, min(10+samples, 200))

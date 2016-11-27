@@ -136,16 +136,22 @@ def grid_search():
 		# old parameter remains the best then search less broad but finer
 		else: 
 			parameter_list[i, 0] = old_optimum
+
+			print("old optimum")
+
 			# is the parameter in the lower third of the boundaries?
 			if(parameter_list[i, 0] - parameter_list[i, 1] < (parameter_list[i, 2] - parameter_list[i, 1]) / 3):
+				print("decrease upper")
 				# then decrease the upper boundary
 				parameter_list[i, 2] -=  0.5 * (parameter_list[i, 2] - parameter_list[i, 1])
 			# is the parameter in the upper third of the boundaries?
 			elif(parameter_list[i, 0] - parameter_list[i, 1] > 2 * (parameter_list[i, 2] - parameter_list[i, 1]) / 3):
+				print("increase lower")
 				# then increase the lower boundary
 				parameter_list[i, 1] +=  0.5 * (parameter_list[i, 2] - parameter_list[i, 1])
 			# is it in the middle?
 			else:
+				print("change both")
 				# then decrease the upper boundary and incrase the lower boundary
 				parameter_list[i, 2] -=  0.25 * (parameter_list[i, 2] - parameter_list[i, 1])
 				parameter_list[i, 1] +=  0.25 * (parameter_list[i, 2] - parameter_list[i, 1])

@@ -12,7 +12,7 @@ setup(
     description='A atemporal coherence network, this means no time dependence in input patterns and connectrons learn coherence',
     long_description='yes you like ' +
                      'ne is ok',
-    packages=['network', 'tests'],
+    packages=['network', 'grid_search', 'tests'],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

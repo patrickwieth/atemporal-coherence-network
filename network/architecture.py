@@ -8,7 +8,6 @@ class parameter:
 		self.init_upper_weight = init_weight_bounds[1]
 		self.weight_boost = weight_ajdustors[0]
 		self.weight_penalty = weight_ajdustors[1]
-		self.weight_diminishing = weight_ajdustors[2]
 		self.activation_boost = activation_adjustors[0]
 		self.activation_penalty = activation_adjustors[1]
 		self.activation_diminishing = activation_adjustors[2]
@@ -40,9 +39,14 @@ class instance:
 
 			for n in self.neurons:
 				n.broadcast_intercon()
-			
+
 		test_result = []
 		for n in self.neurons:
 			test_result.append([n.activate(input_data[0]), n.activate(input_data[1])])
-			
+
 		return test_result
+
+
+def flat_array_to_parameter(array):
+	return parameter(array[0], [array[1], array[2]], [array[3], array[4]], [array[5], array[6], array[7]], array[8])
+

@@ -2,7 +2,7 @@ import random
 import numpy as np
 import pathos.multiprocessing as mp 
 
-p = mp.ProcessingPool(2)
+p = mp.ProcessingPool(4)
 search_iterations = 10
 
 def read_parameters():

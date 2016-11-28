@@ -10,7 +10,7 @@ import grid_search
 # default parameters describe: threshold, [lower and upper init weight], [weight_boost, weight_penalty] and [activation_boost, activation_penalty, activation_diminishing]
 default_parameter = network.architecture.parameter(0.2, [0.5, 2], [0.02, 0.02], [0, 0.02, 0.99], 0.99)
 # default topology describes: size
-default_topology = network.architecture.topology(2)
+default_topology = network.architecture.topology(3)
 
 
 def discrimination_fitness(result):
@@ -29,6 +29,7 @@ def prepare_data():
 	input_a = [0, 1, 0, 1]
 	input_b = [1, 0, 1, 0]
 	input_c = [1, 1, 0, 0]
+	input_d = [0, 0, 1, 1]
 
 	def rand_input():
 		return [random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2)]
@@ -40,13 +41,16 @@ def prepare_data():
 	data = []
 	data.append(input_a)
 	data.append(input_b)
+	data.append(input_c)
 
 	for i in range(1000):
-		pick = random.randint(0,2)
+		pick = random.randint(0,3)
 		if(pick == 0):
 			data.append(add_noise(input_a))
 		elif(pick == 1):
 			data.append(add_noise(input_b))
+		elif(pick == 2):
+			data.append(add_noise(input_c))
 		else:
 			data.append(rand_input())
 			data.append(rand_input())

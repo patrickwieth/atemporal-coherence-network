@@ -42,7 +42,7 @@ class instance:
 
 		test_result = []
 		for n in self.neurons:
-			test_result.append([n.activate(input_data[0]), n.activate(input_data[1])])
+			test_result.append([n.activate(input_data[0]), n.activate(input_data[1]), n.activate(input_data[2])])
 
 		return test_result
 

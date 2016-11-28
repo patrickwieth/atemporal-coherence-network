@@ -52,9 +52,10 @@ class connectron:
 		self.interconnected.append(connected)
 
 	def receive_intercon(self, received):
-		for i in received:
+		5
+		#for i in received:
 			#self.input_weights[i] += -0.02 * math.copysign(1, self.input_weights[i])
-			self.input_weights[i] *= self.parameter.intercon_diminishing #* math.copysign(1, self.input_weights[i])
+		#	self.input_weights[i] *= self.parameter.intercon_diminishing #* math.copysign(1, self.input_weights[i])
 
 	def broadcast_intercon(self):	
 		for i in self.interconnected:

@@ -10,7 +10,7 @@ import grid_search
 # default parameters describe: threshold, [lower and upper init weight], [weight_boost, weight_penalty] and [activation_boost, activation_penalty, activation_diminishing]
 default_parameter = network.architecture.parameter(0.2, [0.5, 2], [0.02, 0.02], [0, 0.02, 0.99], 0.99)
 # default topology describes: size
-default_topology = network.architecture.topology(3)
+default_topology = network.architecture.topology(4)
 
 
 def norm(data):
@@ -54,15 +54,18 @@ def prepare_data():
 	data.append(input_a)
 	data.append(input_b)
 	data.append(input_c)
+	data.append(input_d)
 
 	for i in range(1000):
-		pick = random.randint(0,3)
+		pick = random.randint(0,4)
 		if(pick == 0):
 			data.append(add_noise(input_a))
 		elif(pick == 1):
 			data.append(add_noise(input_b))
 		elif(pick == 2):
 			data.append(add_noise(input_c))
+		elif(pick == 3):
+			data.append(add_noise(input_d))
 		else:
 			data.append(rand_input())
 			data.append(rand_input())
@@ -129,7 +132,7 @@ def set_eval_func():
 		net = network.architecture.instance(topology, parameter)
 
 		samples = 200
-		result = net.run(data, min(10+samples, 200))
+		result = net.run(data, samples)
 		return fitness_f(norm_f(result))
 
 	return eval_func
@@ -137,7 +140,7 @@ def set_eval_func():
 
 #grid_search.dump_parameters(startparas)
 
-grid_search.run(set_eval_func(), [])
+#grid_search.run(set_eval_func(), [])
 
 
 def testrun(parameter):
@@ -146,11 +149,11 @@ def testrun(parameter):
 	parameter = network.architecture.flat_array_to_parameter(parameter)
 	net = network.architecture.instance(topology, parameter)
 
-	samples = 200
+	samples = 10000
 	result = net.run(data, samples)
 	#fitness = discrimination_fitness(norm(result))
 
-	print(result)
+	print(np.array(result))
 	#print(fitness)
 
 	return 0

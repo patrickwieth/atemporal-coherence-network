@@ -13,16 +13,28 @@ default_parameter = network.architecture.parameter(0.2, [0.5, 2], [0.02, 0.02], 
 default_topology = network.architecture.topology(3)
 
 
-def discrimination_fitness(result):
-	return 1/4*(abs(result[0][0] - result[0][1]) + abs(result[1][0] - result[1][1]) + abs(result[0][0] - result[1][0]) + abs(result[0][1] - result[1][1]))
-
 def norm(data):
-	maxval = max(abs(data[0][0]), abs(data[1][0]), abs(data[0][1]), abs(data[1][1]))
-	if(maxval == 0): return data 	
-	f = lambda x : x/abs(maxval)
-	g = lambda x : list(map(f, x))
+	maxval = np.amax(data)
+	if(maxval == 0):	return data 	
+	else:				return data / maxval
 
-	return(list(map(g, data)))
+def discrimination_fitness(matrix):
+
+	def discriminate(line):
+		maxi = np.argmax(line)
+
+		sum = 0
+		for i, val in enumerate(line):
+			if(i == maxi): 	sum += val
+			else: 			sum -= val
+
+		return sum
+
+	row_sums = list(map(discriminate, matrix))
+	col_sums = list(map(discriminate, np.transpose(matrix)))
+
+	return (np.sum(row_sums) + np.sum(col_sums)) / (len(row_sums) + len(col_sums))
+
 
 def prepare_data():
 
@@ -69,28 +81,39 @@ def prepare_data():
 
 
 # start, lower search, upper search values
-'''
-	threshold 				= [0.30,	0,	0.5]
-	lower_init_weight 		= [0.00,	0,	1]
-	upper_init_weight	 	= [2.75,	1.25,	3.75]
-	weight_boost 			= [0.20,	0,	1]
-	weight_penalty 			= [0.10,	0,	0.125]
-	activation_boost	 	= [0.10,	0,	1]
-	activation_penalty		= [0.35,	0,	0.5]
-	activation_diminishing	= [0.05,	0,	0.5]
-	intercon_diminishing	= [0.70,	0.5, 1]
-'''
-
 startparas = np.array([
-	[0.30,	0,	1],
-	[0.00,	0,	1],
-	[2.75,	0,	5],
-	[0.20,	0,	1],
-	[0.10,	0,	1],
-	[0.10,	0,	1],
-	[0.35,	0,	1],
-	[0.05,	0,	1],
-	[0.70,	0,  1]])
+	[0.3,	0,	1],			#threshold
+	[1.6,	0,	2],			#lower_init_weight
+	[0.8,	0,	5],			#upper_init_weight
+	[0.9,	0,	1],			#weight_boost
+	[0.3,	0,	1],			#weight_penalty
+	[0.3,	0,	1],			#activation_boost
+	[0.01,	0,0.1],			#activation_penalty
+	[0.3,	0,	1],			#activation_diminishing
+	[0.7,	0,  1]])		#intercon_diminishing
+			
+
+
+a = np.array(
+	[[1,2,3],
+	 [4,5,6],	
+	 [7,8,9]])
+
+b = np.array(
+	[[1,0, 0],
+	[0,	1, 0],	
+	[0,	0, 1]])
+
+c = np.array(
+	[[1,1, 1],
+	[1,	1, 0],	
+	[1,	0, 1]])
+
+d = np.array(
+	[[1,1, 1],
+	[0,	1, 0],	
+	[0,	0, 1]])
+
 
 
 
@@ -112,8 +135,27 @@ def set_eval_func():
 	return eval_func
 
 
-grid_search.dump_parameters(startparas)
+#grid_search.dump_parameters(startparas)
 
 grid_search.run(set_eval_func(), [])
 
 
+def testrun(parameter):
+	data = prepare_data()
+	topology = default_topology
+	parameter = network.architecture.flat_array_to_parameter(parameter)
+	net = network.architecture.instance(topology, parameter)
+
+	samples = 200
+	result = net.run(data, samples)
+	#fitness = discrimination_fitness(norm(result))
+
+	print(result)
+	#print(fitness)
+
+	return 0
+
+
+paras = grid_search.read_parameters()
+print(paras)
+testrun(paras[:,0])

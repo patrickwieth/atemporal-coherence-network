@@ -42,7 +42,11 @@ class instance:
 
 		test_result = []
 		for n in self.neurons:
-			test_result.append([n.activate(input_data[0]), n.activate(input_data[1]), n.activate(input_data[2])])
+			neuron_activation = []
+			for i, val in enumerate(self.neurons):
+				neuron_activation.append(n.activate(input_data[i]))
+
+			test_result.append(neuron_activation)
 
 		return test_result
 

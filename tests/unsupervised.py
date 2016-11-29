@@ -38,13 +38,13 @@ def discrimination_fitness(matrix):
 
 def prepare_data():
 
-	input_a = [0, 1, 0, 1]
-	input_b = [1, 0, 1, 0]
-	input_c = [1, 1, 0, 0]
-	input_d = [0, 0, 1, 1]
+	input_a = [0, 1, 0, 1, 0, 1, 0, 1]
+	input_b = [1, 0, 1, 0, 1, 0, 1, 0]
+	input_c = [1, 1, 0, 0, 1, 1, 0, 0]
+	input_d = [0, 0, 1, 1, 0, 0, 1, 1]
 
 	def rand_input():
-		return [random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2)]
+		return [random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2)]
 
 	def add_noise(data):
 		f = lambda x : x + random.uniform(-x/5, x/5)
@@ -161,4 +161,4 @@ def testrun(parameter):
 
 paras = grid_search.read_parameters()
 print(paras)
-testrun(paras[:,0])
+#testrun(paras[:,0])

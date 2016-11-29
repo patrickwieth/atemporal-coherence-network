@@ -10,7 +10,7 @@ import grid_search
 # default parameters describe: threshold, [lower and upper init weight], [weight_boost, weight_penalty] and [activation_boost, activation_penalty, activation_diminishing]
 default_parameter = network.architecture.parameter(0.2, [0.5, 2], [0.02, 0.02], [0, 0.02, 0.99], 0.99)
 # default topology describes: size
-default_topology = network.architecture.topology(4)
+default_topology = network.architecture.topology(3)
 
 
 def norm(data):
@@ -54,18 +54,15 @@ def prepare_data():
 	data.append(input_a)
 	data.append(input_b)
 	data.append(input_c)
-	data.append(input_d)
 
 	for i in range(1000):
-		pick = random.randint(0,4)
+		pick = random.randint(0,3)
 		if(pick == 0):
 			data.append(add_noise(input_a))
 		elif(pick == 1):
 			data.append(add_noise(input_b))
 		elif(pick == 2):
 			data.append(add_noise(input_c))
-		elif(pick == 3):
-			data.append(add_noise(input_d))
 		else:
 			data.append(rand_input())
 			data.append(rand_input())
@@ -78,9 +75,6 @@ def prepare_data():
 		parameter = network.architecture.parameter(0.713,	 [0.276, 0.28 + j/1000],				[0.38, 			0.049],				[0.017, 				0.04 + i/1000, 				0.918], 				0.833)
 '''
 
-
-#plt.scatter(plotdata[0], plotdata[1], plotdata[2])
-#plt.show()
 
 
 # start, lower search, upper search values
@@ -132,7 +126,7 @@ def set_eval_func():
 		net = network.architecture.instance(topology, parameter)
 
 		samples = 200
-		result = net.run(data, samples)
+		result = net.run(data, min(10+samples, 200))
 		return fitness_f(norm_f(result))
 
 	return eval_func
@@ -149,11 +143,12 @@ def testrun(parameter):
 	parameter = network.architecture.flat_array_to_parameter(parameter)
 	net = network.architecture.instance(topology, parameter)
 
-	samples = 10000
-	result = net.run(data, samples)
+	samples = 200
+	net.run(data, samples)
+	result = net.test(data)
 	#fitness = discrimination_fitness(norm(result))
 
-	print(np.array(result))
+	print(result)
 	#print(fitness)
 
 	return 0
@@ -162,3 +157,10 @@ def testrun(parameter):
 paras = grid_search.read_parameters()
 print(paras)
 testrun(paras[:,0])
+
+
+plotdata = [[0.5, 0.5], [0.5, 0.5], [0.5, 0.5]]
+
+
+#plt.scatter(plotdata[0], plotdata[1], plotdata[2])
+#plt.show()

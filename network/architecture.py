@@ -40,10 +40,11 @@ class instance:
 			for n in self.neurons:
 				n.broadcast_intercon()
 
+	def test(self, input_data, iterations):
 		test_result = []
 		for n in self.neurons:
 			neuron_activation = []
-			for i, val in enumerate(self.neurons):
+			for i in range(iterations):
 				neuron_activation.append(n.activate(input_data[i]))
 
 			test_result.append(neuron_activation)

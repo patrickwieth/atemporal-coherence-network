@@ -5,12 +5,12 @@ import pathos.multiprocessing as mp
 import network
 import grid_search
 
-
+number_of_neurons = 2
 
 # default parameters describe: threshold, [lower and upper init weight], [weight_boost, weight_penalty] and [activation_boost, activation_penalty, activation_diminishing]
 default_parameter = network.architecture.parameter(0.2, [0.5, 2], [0.02, 0.02], [0, 0.02, 0.99], 0.99)
 # default topology describes: size
-default_topology = network.architecture.topology(3)
+default_topology = network.architecture.topology(number_of_neurons)
 
 
 def norm(data):
@@ -53,24 +53,20 @@ def prepare_data():
 	data = []
 	data.append(input_a)
 	data.append(input_b)
-	data.append(input_c)
-	data.append(input_d)
+	#data.append(input_c)
 
 	for i in range(1000):
-		pick = random.randint(0,3)
+		pick = random.randint(0,2)
 		if(pick == 0):
-			data.append(add_noise(input_a))
+			data.append(rand_input())
+			#data.append(rand_input())
 		elif(pick == 1):
-			data.append(add_noise(input_b))
+			data.append(add_noise(input_a))
 		elif(pick == 2):
-			data.append(add_noise(input_c))
-		elif(pick == 3):
-			data.append(add_noise(input_d))
+			data.append(add_noise(input_b))
 		else:
-			data.append(rand_input())
-			data.append(rand_input())
-
-	return data
+			data.append(add_noise(input_c))
+	return np.array(data)
 
 
 '''
@@ -116,7 +112,6 @@ d = np.array(
 
 
 
-
 def set_eval_func():
 	data = prepare_data()
 	topology = default_topology
@@ -128,15 +123,17 @@ def set_eval_func():
 		net = network.architecture.instance(topology, parameter)
 
 		samples = 200
-		result = net.run(data, samples)
+		net.run(data, min(10+samples, 200))
+		result = net.test(data, 2)
+
 		return fitness_f(norm_f(result))
 
 	return eval_func
 
 
-#grid_search.dump_parameters(startparas)
+grid_search.dump_parameters(startparas)
 
-#grid_search.run(set_eval_func(), [])
+grid_search.run(set_eval_func(), [])
 
 
 def testrun(parameter):
@@ -147,11 +144,11 @@ def testrun(parameter):
 
 	samples = 200
 	net.run(data, samples)
-	result = net.test(data)
-	#fitness = discrimination_fitness(norm(result))
+	result = net.test(data, 2)
+	fitness = discrimination_fitness(norm(result))
 
 	print(result)
-	#print(fitness)
+	print(fitness)
 
 	return 0
 

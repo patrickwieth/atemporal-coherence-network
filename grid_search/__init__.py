@@ -2,9 +2,8 @@ import random
 import numpy as np
 import pathos.multiprocessing as mp 
 
-p = mp.ProcessingPool(4)
+p = mp.ProcessingPool(2)
 search_iterations = 10
-fine_grain_factor = 0.1
 
 def read_parameters():
 	return np.load('results/parameter.npy')
@@ -13,17 +12,15 @@ def dump_parameters(paras):
 	np.save("results/parameter.npy", paras)
 
 
-
 def evaluate_fitness(evaluation_function, parameter):
-	samples = range(500)
+	samples = range(200)
 	fitness = 0
 
 	testf = lambda x: evaluation_function(parameter)
 
-	fitness = p.map(testf, samples)
+	fitness = p.map(testf, samples)    
 
 	return np.sum(fitness) / len(samples)
-
 
 def optimize_single_parameter(evaluation_function, parameter_list, index_to_optimize):
 	i = index_to_optimize
@@ -47,16 +44,16 @@ def optimize_single_parameter(evaluation_function, parameter_list, index_to_opti
 		# is the parameter in the lower third of the boundaries?
 		if(parameter_list[i, 0] - parameter_list[i, 1] < (parameter_list[i, 2] - parameter_list[i, 1]) / 3):
 			# then decrease the upper boundary
-			parameter_list[i, 2] -=  fine_grain_factor * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 2] -=  0.5 * (parameter_list[i, 2] - parameter_list[i, 1])
 		# is the parameter in the upper third of the boundaries?
 		elif(parameter_list[i, 0] - parameter_list[i, 1] > 2 * (parameter_list[i, 2] - parameter_list[i, 1]) / 3):
 			# then increase the lower boundary
-			parameter_list[i, 1] +=  fine_grain_factor * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 1] +=  0.5 * (parameter_list[i, 2] - parameter_list[i, 1])
 		# is it in the middle?
 		else:
 			# then decrease the upper boundary and incrase the lower boundary
-			parameter_list[i, 2] -=  fine_grain_factor/2 * (parameter_list[i, 2] - parameter_list[i, 1])
-			parameter_list[i, 1] +=  fine_grain_factor/2 * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 2] -=  0.25 * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 1] +=  0.25 * (parameter_list[i, 2] - parameter_list[i, 1])
 
 	print("best:", max_fitness)
 
@@ -72,7 +69,9 @@ def sweep(evaluation_function, parameter_list):
 
 def run(evaluation_function, parameter_list):
 
-	parameter_list = read_parameters()
+	base_parameter_list = read_parameters()
+	print(base_parameter_list)
+	parameter_list = np.copy(base_parameter_list)
 	
 	while True:
 		parameter_list = sweep(evaluation_function, parameter_list)

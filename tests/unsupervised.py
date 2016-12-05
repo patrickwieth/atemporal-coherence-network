@@ -64,6 +64,8 @@ def prepare_data():
 			data.append(add_noise(input_b))
 		elif(pick == 2):
 			data.append(add_noise(input_c))
+		elif(pick == 3):
+			data.append(add_noise(input_d))
 		else:
 			data.append(rand_input())
 			data.append(rand_input())
@@ -75,7 +77,6 @@ def prepare_data():
 											# threshold, [lower and upper init weight], [weight_boost, weight_penalty] and [activation_boost, activation_penalty, activation_diminishing], intercon_diminishing
 		parameter = network.architecture.parameter(0.713,	 [0.276, 0.28 + j/1000],				[0.38, 			0.049],				[0.017, 				0.04 + i/1000, 				0.918], 				0.833)
 '''
-
 
 
 # start, lower search, upper search values

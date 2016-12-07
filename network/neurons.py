@@ -53,12 +53,17 @@ class connectron:
 
 	def receive_intercon(self, received):
 		for i in received:
-			self.input_weights[i] -= self.parameter.intercon_diminishing * math.copysign(1, self.input_weights[i])
-			#self.input_weights[i] *= self.parameter.intercon_diminishing #* math.copysign(1, self.input_weights[i])
+			#self.input_weights[i] -= self.parameter.intercon_diminishing * math.copysign(1, self.input_weights[i])
+			self.input_weights[i] *= self.parameter.intercon_diminishing 
+			# after a specific weight was diminished (because it was active on another connectron, all other weights get buffed)
+			#buff = self.input_weights[i] * (1 - self.parameter.intercon_diminishing) / len(self.input_weights)
+			#for j in self.input_weights:
+			#	j += buff
 
 	def broadcast_intercon(self):	
-		for i in self.interconnected:
-			i.receive_intercon(self.actives)
+		return 1
+		#for i in self.interconnected:
+		#	i.receive_intercon(self.actives)
 
 	def activate(self, inputs):
 		while(len(inputs) > len(self.input_weights)):
@@ -94,7 +99,11 @@ class connectron:
 					self.input_weights[i] -= self.parameter.weight_penalty * math.copysign(1, self.input_weights[i])
 				# append important inputs to actives
 				else:					
-					self.actives.append(i)
+					#self.actives.append(i)
+					for j in self.interconnected:
+						j.receive_intercon([i])
+
+
 		else:
 			# weak input
 			self.activation *= 1 - self.parameter.activation_penalty

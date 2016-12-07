@@ -4,6 +4,7 @@ import pathos.multiprocessing as mp
 
 p = mp.ProcessingPool(2)
 search_iterations = 10
+search_sharpening = 0.2
 
 def read_parameters():
 	return np.load('results/parameter.npy')
@@ -15,9 +16,7 @@ def dump_parameters(paras):
 def evaluate_fitness(evaluation_function, parameter):
 	samples = range(200)
 	fitness = 0
-
 	testf = lambda x: evaluation_function(parameter)
-
 	fitness = p.map(testf, samples)    
 
 	return np.sum(fitness) / len(samples)
@@ -44,16 +43,16 @@ def optimize_single_parameter(evaluation_function, parameter_list, index_to_opti
 		# is the parameter in the lower third of the boundaries?
 		if(parameter_list[i, 0] - parameter_list[i, 1] < (parameter_list[i, 2] - parameter_list[i, 1]) / 3):
 			# then decrease the upper boundary
-			parameter_list[i, 2] -=  0.5 * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 2] -=  search_sharpening * (parameter_list[i, 2] - parameter_list[i, 1])
 		# is the parameter in the upper third of the boundaries?
 		elif(parameter_list[i, 0] - parameter_list[i, 1] > 2 * (parameter_list[i, 2] - parameter_list[i, 1]) / 3):
 			# then increase the lower boundary
-			parameter_list[i, 1] +=  0.5 * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 1] +=  search_sharpening * (parameter_list[i, 2] - parameter_list[i, 1])
 		# is it in the middle?
 		else:
 			# then decrease the upper boundary and incrase the lower boundary
-			parameter_list[i, 2] -=  0.25 * (parameter_list[i, 2] - parameter_list[i, 1])
-			parameter_list[i, 1] +=  0.25 * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 2] -=  search_sharpening/2 * (parameter_list[i, 2] - parameter_list[i, 1])
+			parameter_list[i, 1] +=  search_sharpening/2 * (parameter_list[i, 2] - parameter_list[i, 1])
 
 	print("best:", max_fitness)
 

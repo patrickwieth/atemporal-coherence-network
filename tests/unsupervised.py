@@ -3,52 +3,15 @@ import random
 import numpy as np
 import pathos.multiprocessing as mp 
 import network
-import grid_search
+import grid
+import util
 
-number_of_neurons = 3
+number_of_neurons = 2
 
 # default parameters describe: threshold, [lower and upper init weight], [weight_boost, weight_penalty] and [activation_boost, activation_penalty, activation_diminishing]
 default_parameter = network.architecture.parameter(0.2, [0.5, 2], [0.02, 0.02], [0, 0.02, 0.99], 0.99)
 # default topology describes: size
 default_topology = network.architecture.topology(number_of_neurons)
-
-
-
-def prepare_data():
-
-	input_a = [0, 1, 0, 1, 0, 1, 0, 1]
-	input_b = [1, 0, 1, 0, 1, 0, 1, 0]
-	input_c = [1, 1, 0, 0, 1, 1, 0, 0]
-	input_d = [0, 0, 1, 1, 0, 0, 1, 1]
-
-	def rand_input():
-		return [random.uniform(0, 2) for _ in range(8)]
-		#return [random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2), random.uniform(0,2)]
-
-	def add_noise(data):
-		f = lambda x : x + random.uniform(-x/5, x/5)
-		return(list(map(f, data)))
-
-	data = []
-	data.append(input_a)
-	data.append(input_b)
-	data.append(input_c)
-
-	for i in range(1000):
-		pick = random.randint(0, number_of_neurons)
-		print(pick)
-		if(pick == 0):	
-			data.append(rand_input())
-			#data.append(rand_input())
-		elif(pick == 1):
-			data.append(add_noise(input_a))
-		elif(pick == 2):
-			data.append(add_noise(input_b))
-		else:
-			data.append(add_noise(input_c))
-	return np.array(data)
-
-
 
 # start, lower search, upper search values
 startparas = np.array([
@@ -64,13 +27,17 @@ startparas = np.array([
 
 
 
-
 def set_eval_func():
-	data = prepare_data()
+	n = number_of_neurons
+
+	data = util.data.patterns(n, 0.5, 0.2)
+
+	#print(data)
+	#for i in data:
+	#	print(i)
+
 	topology = default_topology
 	fitness_f = network.fitness.discrimination
-	
-	n = number_of_neurons
 
 	def eval_func(parameter):
 		parameter = network.architecture.flat_array_to_parameter(parameter)
@@ -85,13 +52,17 @@ def set_eval_func():
 	return eval_func
 
 
-#grid_search.dump_parameters(startparas)
+util.io.dump_parameters(startparas)
 
-grid_search.run(set_eval_func(), [])
+grid.search.run(set_eval_func(), [])
+
+
 
 
 def testrun(parameter):
-	data = prepare_data()
+	n = number_of_neurons
+
+	data = util.data.patterns(n, 0.0, 0.2)
 	topology = default_topology
 	parameter = network.architecture.flat_array_to_parameter(parameter)
 	net = network.architecture.instance(topology, parameter)

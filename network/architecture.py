@@ -31,14 +31,15 @@ class instance:
 					a.set_interconnection(b)
 
 	def run(self, input_data, iterations):
-
 		for i in range(iterations):
-
 			for n in self.neurons:
 				n.activate(input_data[random.randint(0, len(input_data)-1)])				
 
 			for n in self.neurons:
 				n.broadcast_intercon()
+
+			for n in self.neurons:
+				n.flush_inhibition()
 
 	def test(self, input_data, iterations):
 		test_result = []

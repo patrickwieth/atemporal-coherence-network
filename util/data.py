@@ -41,7 +41,13 @@ def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
 		return patterns
 
 	# strip off the first element since it is all 0s and these is not a real pattern, more like the not-pattern
-	input_patterns = create_input_patterns(number_of_patterns, number_of_patterns+1)[1:]
+	input_patterns = create_input_patterns(number_of_patterns, number_of_patterns+4)
+
+	#temp = input_patterns[5]
+	input_patterns[2] = input_patterns[6]
+	#input_patterns[5] = temp
+
+	input_patterns = input_patterns[1:-3]
 
 	print(input_patterns)
 

@@ -9,13 +9,13 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
 
-toolbox.register("attr_bool", random.uniform, 0, 1)
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, n=9)
+toolbox.register("attr_float", random.uniform, 0, 1)
+toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_float, n=9)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-number_of_neurons = 2
+number_of_neurons = 4
 
-data = util.data.patterns(number_of_neurons, 0.1, 0.0)
+data = util.data.patterns(number_of_neurons, 0.1, 0.1)
 
 def evalOneMax(individual):
 	params = network.architecture.flat_array_to_parameter(individual)
@@ -33,21 +33,23 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 
 population = toolbox.population(n=300)
 
-NGEN=2
+NGEN=100
 for gen in range(NGEN):
 	offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
 	fits = toolbox.map(toolbox.evaluate, offspring)
 	for fit, ind in zip(fits, offspring):
-		print(fit)
+		#print(fit)
 		ind.fitness.values = fit
 	population = toolbox.select(offspring, k=len(population))
 
 
 top10 = tools.selBest(population, k=10)
 
-print(top10)
+#print(top10)
 
-print(list(map(evalOneMax,top10)))
-print(list(map(evalOneMax,top10)))
-print(list(map(evalOneMax,top10)))
-print(list(map(evalOneMax,top10)))
+fitnesses = list(map(evalOneMax,top10))
+
+for idx, val in enumerate(top10):
+	print("params:", val)
+	print("fitness", fitnesses[idx], "\n")
+

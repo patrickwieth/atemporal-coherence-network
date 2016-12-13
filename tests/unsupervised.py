@@ -30,7 +30,7 @@ startparas = np.array([
 def set_eval_func():
 	n = number_of_neurons
 
-	data = util.data.patterns(n, 0.5, 0.2)
+	data = util.data.patterns(n, 0.01, 0.2)
 
 	#print(data)
 	#for i in data:
@@ -52,7 +52,7 @@ def set_eval_func():
 	return eval_func
 
 
-util.io.dump_parameters(startparas)
+#util.io.dump_parameters(startparas)
 
 grid.search.run(set_eval_func(), [])
 

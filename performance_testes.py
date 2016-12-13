@@ -4,6 +4,15 @@ import numpy as np
 from numpy import array, arange, vectorize, rint
 import math
 
+
+
+a = np.array([0, 1, 1])
+b = np.array([0, 0, 1])
+
+print(a*b)
+
+
+
 input_mean = 7
 def testapply(a):
 	a = [ a[0] + math.copysign(0.1, a[0]) if abs(a[0]*a[1]) < abs(input_mean) else a[0] - math.copysign(0.1, a[0]), a[1] ]

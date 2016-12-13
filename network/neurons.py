@@ -1,6 +1,7 @@
 import numpy as np
 import random, math
 from network import mechanisms
+from network import schemes
 
 class connectron:
 	def __init__(self, parameter):
@@ -52,7 +53,7 @@ class connectron:
 		
 		# without sufficient input, decrease activation, increase all weights, exit activate() 
 		if(input_sum < self.parameter.threshold * self.activation):
-			mechanisms.buff_weights_and_nerf_activation(self)
+			schemes.buff_weights_and_nerf_activation(self)
 			return 0
 	
 		# if unset, set activation and exit activate()
@@ -66,15 +67,16 @@ class connectron:
 
 		if(input_intensity > 0):
 			# strong input
-			self.activation += self.parameter.activation_boost * math.copysign(1, input_sum)
+			mechanisms.buff_activation(self)
+			#self.activation += self.parameter.activation_buff * math.copysign(1, input_sum)
 
-			mechanisms.buff_or_nerf_depending_on_input(self)
-			
+			schemes.buff_or_nerf_depending_on_input(self)
 			mechanisms.set_actives(self)
-			
+
+
 			
 		else:
 			# weak input
-			self.activation *= 1 - self.parameter.activation_penalty
+			mechanisms.scale_down_activation(self)
 
 		return input_sum

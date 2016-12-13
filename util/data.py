@@ -50,8 +50,10 @@ def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
 	# first add recurring patterns at the beginning, then correct amount of random data
 	for i in range(number_of_patterns):
 		data.append(add_noise(input_patterns[i]))
-	for i in range(round(number_of_patterns*percentage_of_random_data/(1-percentage_of_random_data))):
-		push_random(data)
+	if(percentage_of_random_data > 0):
+		for i in range(round(number_of_patterns*percentage_of_random_data/(1-percentage_of_random_data))):
+			print("bla")
+			push_random(data)
 
 	while(len(data) < 1000):
 		push_datum(data, input_patterns)		

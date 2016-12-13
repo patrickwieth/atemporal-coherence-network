@@ -8,9 +8,10 @@ class parameter:
 		self.init_upper_weight = init_weight_bounds[1]
 		self.weight_boost = weight_ajdustors[0]
 		self.weight_penalty = weight_ajdustors[1]
-		self.activation_boost = activation_adjustors[0]
-		self.activation_penalty = activation_adjustors[1]
-		self.activation_diminishing = activation_adjustors[2]
+		self.activation_buff = activation_adjustors[0]
+		self.activation_nerf = activation_adjustors[1]
+		self.activation_scale_down = activation_adjustors[2]
+		#self.activation_scale_up = activation_adjustors[3]
 		self.intercon_diminishing = intercon_diminishing
 
 class topology:

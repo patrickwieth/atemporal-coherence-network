@@ -4,79 +4,89 @@ from network import mechanisms
 from network import schemes
 
 class connectron:
-	def __init__(self, parameter):
+	def __init__(self, parameter, schemes):
 		self.parameter = parameter
 		self.activation = 0
 		self.inputs = np.array([])
 		self.input_weights = np.array([])
 		self.input_mean = 0
+		self.input_sum = 0
+		self.input_intensity = 0
 		self.inhibited = np.array([])
 		self.interconnected = []
 		self.actives = []
+		self.stop_flag = False
 
-	def set_interconnection(self, connected):
-		self.interconnected.append(connected)
+		# ACTIVATION
 
-	def flush_inhibition(self):
-		self.inhibited.fill(1)
+		# eigentlich sollte hier jede Funktion aus jeder Phase an jede Phase angehängt werden...
+		self.activation_phases = schemes.activation_phases
 
-	def receive_intercon(self, received):
-		for i in received:
-			# intercon scheme 2
-			#self.inhibited[i] = 0.1
+		def input_processing(neuron):
+			mechanisms.add_weights_when_input_too_long(neuron)
+			mechanisms.sum_up_input(neuron)
 
-			#self.input_weights[i] -= self.parameter.intercon_diminishing * math.copysign(1, self.input_weights[i])
-			self.input_weights[i] *= self.parameter.intercon_diminishing 
+		def input_postprocessing(neuron):
+			mechanisms.increase_weights_decrease_activation_on_weak_input(neuron)
+			mechanisms.define_unset_activation(neuron)
 
-			# after a specific weight was diminished (because it was active on another connectron, all other weights get buffed)
-			#buff = self.input_weights[i] * (1 - self.parameter.intercon_diminishing) / len(self.input_weights)
-			#for j in self.input_weights:
-			#	j += buff
+		def activation_preprocessing(neuron):
+			neuron.actives = []
+			neuron.input_intensity = abs(neuron.input_sum) - abs(neuron.activation)
 
-	def broadcast_intercon(self):	
-		# intercon scheme 2
-		#return 1
+		def activation_processing(neuron):
+			if(self.input_intensity > 0):
+				# strong input
+				mechanisms.buff_activation(neuron)
+				#self.activation += self.parameter.activation_buff * math.copysign(1, input_sum)
 
-		for i in self.interconnected:
-			i.receive_intercon(self.actives)
+				mechanisms.buff_or_nerf_depending_on_input(neuron)
+				mechanisms.set_actives(neuron)
+			else:
+				# weak input
+				mechanisms.scale_down_activation(neuron)
 
-			
-	def activate(self, inputs):
-		self.inputs = inputs
-
-		while(len(inputs) > len(self.input_weights)):
-			self.input_weights = np.append(self.input_weights, random.uniform(self.parameter.init_lower_weight, self.parameter.init_upper_weight))
-			self.inhibited = np.append(self.inhibited, 1)
-
-		input_sum = np.dot(inputs, self.input_weights)
-		self.input_mean = input_sum / len(inputs)
-		
-		# without sufficient input, decrease activation, increase all weights, exit activate() 
-		if(input_sum < self.parameter.threshold * self.activation):
-			schemes.buff_weights_and_nerf_activation(self)
+		def activation_postprocessing(neuron):
 			return 0
+
+		self.activation_phases.append(input_processing)
+		self.activation_phases.append(input_postprocessing)
+		self.activation_phases.append(activation_preprocessing)
+		self.activation_phases.append(activation_processing)
+		self.activation_phases.append(activation_postprocessing)
+
+		# INTERCON BROADCASTING
+
+		self.broadcast_intercon = lambda: mechanisms.broadcast_intercon(self)
+		self.receive_intercon = lambda received: mechanisms.receive_intercon(self, received)
+		self.add_interconnection = lambda connected: mechanisms.add_intercon(self, connected)
+
 	
-		# if unset, set activation and exit activate()
-		if(self.activation == 0):
-			self.activation = input_sum
-			return 0
+	def broadcast(self):
+		mechanisms.broadcast_intercon(self)
+				
+	def activate(self, inputs):
+		self.stop_flag = False
 
-		self.actives = []
+		# phase 1: INPUT PROCESSING
+		self.inputs = inputs
+		self.activation_phases[0](self)
+		if(self.stop_flag): return 0
 
-		input_intensity = abs(input_sum) - abs(self.activation)
+		# phase 2: INPUT POSTPROCESSING
+		self.activation_phases[1](self)
+		if(self.stop_flag): return 0
 
-		if(input_intensity > 0):
-			# strong input
-			mechanisms.buff_activation(self)
-			#self.activation += self.parameter.activation_buff * math.copysign(1, input_sum)
+		# phase 3: ACTIVATION PREPROCESSING
+		self.activation_phases[2](self)
+		if(self.stop_flag): return 0
 
-			schemes.buff_or_nerf_depending_on_input(self)
-			mechanisms.set_actives(self)
+		# phase 4: ACTIVATION PROCESSING
+		self.activation_phases[3](self)
+		if(self.stop_flag): return 0
 
+		# phase 5: ACTIVATION POSTPROCESSING
+		self.activation_phases[3](self)
+		if(self.stop_flag): return 0
 
-			
-		else:
-			# weak input
-			mechanisms.scale_down_activation(self)
-
-		return input_sum
+		return self.input_sum

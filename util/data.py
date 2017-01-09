@@ -70,7 +70,6 @@ def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
 		data.append(add_noise(input_patterns[i]))
 	if(percentage_of_random_data > 0):
 		for i in range(round(number_of_patterns*percentage_of_random_data/(1-percentage_of_random_data))):
-			print("bla")
 			push_random(data)
 
 	while(len(data) < 1000):

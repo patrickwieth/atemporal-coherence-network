@@ -1,10 +1,11 @@
 import evolution
 import network
 import util
+import time
 
 number_of_neurons = 4
 
-data = util.data.patterns(number_of_neurons, 0.1, 0.1)
+data = util.data.patterns(number_of_neurons, 0.01, 0.02)
 
 def evalOneMax(individual):
 	params = network.architecture.flat_array_to_parameter(individual)
@@ -16,16 +17,24 @@ def evalOneMax(individual):
 	return network.fitness.discrimination(result),
 
 
-
 test1 = evolution.search.evolution(evalOneMax)
 
+seconds_to_go = 5
+running_for = 0
+gen = 1
+start = time.time()
 
-NGEN=1
-for gen in range(NGEN):
+
+while running_for < seconds_to_go:
 	print("running generation #"+str(gen))
 	test1.iterate()
 
-test1.get_best()
+	gen += 1
+	running_for = time.time()-start
 
+res = test1.get_best(10)
 
-#evolution.search.single_run()
+print(res[:,1])
+
+print("after ", running_for, "seconds")
+

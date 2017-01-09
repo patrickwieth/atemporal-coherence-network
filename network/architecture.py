@@ -1,5 +1,6 @@
 import random
 from network import neurons
+from network import schemes
 
 class parameter:
 	def __init__(self, threshold, init_weight_bounds, weight_ajdustors, activation_adjustors, intercon_diminishing):
@@ -24,12 +25,12 @@ class instance:
 		self.neurons = []
 
 		for i in range(topology.size):
-			self.neurons.append(neurons.connectron(parameter))
+			self.neurons.append(neurons.connectron(parameter, schemes.base_scheme))
 
 		for i, a in enumerate(self.neurons):
 			for j, b in enumerate(self.neurons):
 				if(i != j):
-					a.set_interconnection(b)
+					a.add_interconnection(b)
 
 	def run(self, input_data, iterations):
 		for i in range(iterations):
@@ -37,10 +38,8 @@ class instance:
 				n.activate(input_data[random.randint(0, len(input_data)-1)])				
 
 			for n in self.neurons:
-				n.broadcast_intercon()
-
-			for n in self.neurons:
-				n.flush_inhibition()
+				n.broadcast()
+				#n.broadcast_intercon()
 
 	def test(self, input_data, iterations):
 		test_result = []

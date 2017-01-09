@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import copy
 from network import mechanisms
 
 #########################################################################################################
@@ -8,8 +9,58 @@ from network import mechanisms
 # A neuron can use a scheme, where the whole set of schemes makes up the behavior of a neuron 	        #
 #########################################################################################################
 
+class scheme:
+	def __init__(self):
+		self.activation_phases = []
+		self.broadcast = []
+		self.receive = []
+		self.connect =[]
+		
+	def set_activation_phases(self, args):
+		self.activation_phases = args
+	
 
 
+
+base_scheme = scheme()
+
+
+
+def input_processing(neuron):
+	mechanisms.add_weights_when_input_too_long(neuron)
+	mechanisms.sum_up_input(neuron)
+
+def input_postprocessing(neuron):
+	mechanisms.increase_weights_decrease_activation_on_weak_input(neuron)
+	mechanisms.define_unset_activation(neuron)
+
+def activation_preprocessing(neuron):
+	neuron.actives = []
+	neuron.input_intensity = abs(neuron.input_sum) - abs(neuron.activation)
+
+def activation_processing(neuron):
+	if(neuron.input_intensity > 0):
+		# strong input
+		mechanisms.buff_activation(neuron)
+		#self.activation += self.parameter.activation_buff * math.copysign(1, input_sum)
+
+		mechanisms.buff_or_nerf_depending_on_input(neuron)
+		mechanisms.set_actives(neuron)
+	else:
+		# weak input
+		mechanisms.scale_down_activation(neuron)
+
+def activation_postprocessing(neuron):
+	return 0
+
+
+base_scheme.set_activation_phases([input_processing, input_postprocessing, activation_preprocessing, activation_processing, activation_postprocessing])
+
+
+
+# THESE SCHEMES ARE BULLSHIT:
+
+'''
 def buff_weights_and_nerf_activation(neuron):
 	mechanisms.nerf_activation(neuron)
 	
@@ -17,24 +68,7 @@ def buff_weights_and_nerf_activation(neuron):
 		mechanisms.buff_weight(neuron, idx)
 
 
-def buff_or_nerf_depending_on_input(neuron):
-	
-	def buff_or_nerf(a):
-		if abs(a[0]*a[1]) > abs(neuron.input_mean):
-			#self.actives.append(i)
-			a[0] += math.copysign(neuron.parameter.weight_buff, a[0])  
-		else:
-			a[0] -= math.copysign(neuron.parameter.weight_nerf, a[0])
 
-		return a
-
-
-	inputyes = np.array([neuron.input_weights, neuron.inputs]).T
-	#print(inputyes)
-	inputyes = np.array(list(map(buff_or_nerf, inputyes)))	
-
-			
-	neuron.input_weights = inputyes.T[0]
 
 
 def set_actives(neuron):
@@ -87,11 +121,12 @@ def broadcast_intercon(self):
 
 	for i in self.interconnected:
 		i.receive_intercon(self.actives)
+'''
 
 # interesting ideas
 
 
-# kill dead weights forever, you and me!
+# remove dead weights
 
 # reshuffle (everything shitty for some time? reshuffle weights)
 

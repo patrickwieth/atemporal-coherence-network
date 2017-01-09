@@ -4,9 +4,6 @@ from deap import creator, base, tools, algorithms
 import network
 import util
 
-#number_of_neurons = 4
-
-#data = util.data.patterns(number_of_neurons, 0.1, 0.1)
 
 class evolution:
 	def __init__(self, evaluation_function):
@@ -24,7 +21,7 @@ class evolution:
 		self.toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
 		self.toolbox.register("select", tools.selTournament, tournsize=3)
 
-		self.population = self.toolbox.population(n=300)
+		self.population = self.toolbox.population(n=20)
 
 	def iterate(self):
 		offspring = algorithms.varAnd(self.population, self.toolbox, cxpb=0.5, mutpb=0.1)
@@ -34,14 +31,9 @@ class evolution:
 				
 		self.population = self.toolbox.select(offspring, k=len(self.population))
 
-	def get_best(self):
-		top10 = tools.selBest(self.population, k=10)
+	def get_best(self, count):
+		top = tools.selBest(self.population, k=count)
+		fitnesses = list(map(self.toolbox.evaluate, top))
+		result = np.array(list(zip(top, [f[0] for f in fitnesses])))
 
-		fitnesses = list(map(self.toolbox.evaluate, top10))
-		
-		print(fitnesses)
-
-		for idx, val in enumerate(top10):
-			print("params:", val)
-			print("fitness", fitnesses[idx], "\n")
-
+		return np.sort(result, axis=0)

@@ -20,12 +20,12 @@ class topology:
 		self.size = size
 
 class instance:
-	def __init__(self, topology, parameter):
+	def __init__(self, topology, behavior, parameter):
 
 		self.neurons = []
 
 		for i in range(topology.size):
-			self.neurons.append(neurons.connectron(parameter, schemes.base_scheme))
+			self.neurons.append(neurons.connectron(parameter, behavior))
 
 		for i, a in enumerate(self.neurons):
 			for j, b in enumerate(self.neurons):
@@ -39,7 +39,7 @@ class instance:
 
 			for n in self.neurons:
 				n.broadcast()
-				#n.broadcast_intercon()
+				
 
 	def test(self, input_data, iterations):
 		test_result = []

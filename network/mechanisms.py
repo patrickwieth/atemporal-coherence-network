@@ -2,7 +2,6 @@ import numpy as np
 import random
 import math
 
-
 #########################################################################################################
 # Mechanisms are building blocks of neurons  															#
 # A scheme can use a mechanism, where the whole set of mechanisms makes up the behavior of a neuron 	#
@@ -72,6 +71,21 @@ def increase_weights_decrease_activation_on_weak_input(neuron):
 		neuron.stop_flag = True
 		return 0
 
+def input_intensity_by_abs_diff(neuron):
+	neuron.input_intensity = abs(neuron.input_sum) - abs(neuron.activation)
+
+def buff_activation_on_strong_input_nerv_on_weak_input(neuron):
+	if(neuron.input_intensity > 0):
+		# strong input
+		buff_activation(neuron)
+		#self.activation += self.parameter.activation_buff * math.copysign(1, input_sum)
+
+		buff_or_nerf_depending_on_input(neuron)
+		set_actives(neuron)
+	else:
+		# weak input
+		scale_down_activation(neuron)
+
 def buff_or_nerf_depending_on_input(neuron):
 	
 	def buff_or_nerf(a):
@@ -96,6 +110,9 @@ def flush_inhibition(neuron):
 
 # inhibtion
 
+def empty_actives(neuron):
+	neuron.actives = []
+
 def set_actives(neuron):
 	for i, val in enumerate(neuron.inputs):
 		if(abs(val*neuron.input_weights[i]) > abs(neuron.input_mean)):
@@ -114,3 +131,21 @@ def receive_intercon(neuron, received):
 def add_intercon(neuron, connected):
 	neuron.interconnected.append(connected)
 
+
+def do_nothing(neuron):
+	return 1
+
+
+pool = {'weight_init1':	[add_weights_when_input_too_long, 'input_processing'],
+		'input_sum1':	[sum_up_input, 'input_processing'],
+		'input_post1':	[increase_weights_decrease_activation_on_weak_input, 'input_postprocessing'],
+		'input_post2':	[define_unset_activation, 'input_postprocessing'],
+		'ac_pre1':		[empty_actives, 'activation_preprocessing'],
+		'ac_pre2':		[input_intensity_by_abs_diff, 'activation_preprocessing'],
+		'ac_pro1':		[buff_activation_on_strong_input_nerv_on_weak_input, 'activation_processing'],
+		'ac_post1':		[do_nothing, 'activation_postprocessing'],		
+		'brc1':			[broadcast_intercon, "broadcast"],
+		'rcv1':			[receive_intercon, 'receive'],
+		'con1':			[add_intercon, 'connect']
+		}
+		

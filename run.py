@@ -3,6 +3,8 @@ import network
 import util
 import time
 
+from network import schemes
+
 number_of_neurons = 4
 
 data = util.data.patterns(number_of_neurons, 0.01, 0.02)
@@ -10,7 +12,7 @@ data = util.data.patterns(number_of_neurons, 0.01, 0.02)
 def evalOneMax(individual):
 	params = network.architecture.flat_array_to_parameter(individual)
 	topology = network.architecture.topology(number_of_neurons)
-	net = network.architecture.instance(topology, params)
+	net = network.architecture.instance(topology, [schemes.base_scheme], params)
 	net.run(data, 200)
 	result = net.test(data, number_of_neurons)
 

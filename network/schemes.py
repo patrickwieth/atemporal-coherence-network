@@ -18,59 +18,41 @@ class scheme:
 		
 	def set_activation_phases(self, args):
 		self.activation_phases = args
+
+	def set_broadcasting(self, send, receive, connect):
+		self.broadcast = send
+		self.connect = connect
+		self.receive = receive
+
+	def set_mechanisms_by_dict(self, mechanisms_dict):
+		input_processing = mechanisms_dict['input_processing']
+		input_postprocessing = mechanisms_dict['input_postprocessing']
+		activation_preprocessing = mechanisms_dict['activation_preprocessing']
+		activation_processing = mechanisms_dict['activation_processing']
+		activation_postprocessing = mechanisms_dict['activation_postprocessing']
+
+		self.set_activation_phases([input_processing, input_postprocessing, activation_preprocessing, activation_processing, activation_postprocessing])
+		self.set_broadcasting(mechanisms_dict['broadcast'], mechanisms_dict['receive'], mechanisms_dict['connect'])
+
 	
 
-
-
+### BASE SCHEME ###
 base_scheme = scheme()
 
-
-
-def input_processing(neuron):
-	mechanisms.add_weights_when_input_too_long(neuron)
-	mechanisms.sum_up_input(neuron)
-
-def input_postprocessing(neuron):
-	mechanisms.increase_weights_decrease_activation_on_weak_input(neuron)
-	mechanisms.define_unset_activation(neuron)
-
-def activation_preprocessing(neuron):
-	neuron.actives = []
-	neuron.input_intensity = abs(neuron.input_sum) - abs(neuron.activation)
-
-def activation_processing(neuron):
-	if(neuron.input_intensity > 0):
-		# strong input
-		mechanisms.buff_activation(neuron)
-		#self.activation += self.parameter.activation_buff * math.copysign(1, input_sum)
-
-		mechanisms.buff_or_nerf_depending_on_input(neuron)
-		mechanisms.set_actives(neuron)
-	else:
-		# weak input
-		mechanisms.scale_down_activation(neuron)
-
-def activation_postprocessing(neuron):
-	return 0
-
+input_processing = [mechanisms.add_weights_when_input_too_long, mechanisms.sum_up_input]
+input_postprocessing = [mechanisms.increase_weights_decrease_activation_on_weak_input,	mechanisms.define_unset_activation]
+activation_preprocessing = [mechanisms.empty_actives, mechanisms.input_intensity_by_abs_diff]
+activation_processing = [mechanisms.buff_activation_on_strong_input_nerv_on_weak_input]
+activation_postprocessing = []
 
 base_scheme.set_activation_phases([input_processing, input_postprocessing, activation_preprocessing, activation_processing, activation_postprocessing])
+base_scheme.set_broadcasting([mechanisms.broadcast_intercon], [mechanisms.receive_intercon], [mechanisms.add_intercon])
 
 
 
 # THESE SCHEMES ARE BULLSHIT:
 
 '''
-def buff_weights_and_nerf_activation(neuron):
-	mechanisms.nerf_activation(neuron)
-	
-	for idx in range(len(neuron.input_weights)):
-		mechanisms.buff_weight(neuron, idx)
-
-
-
-
-
 def set_actives(neuron):
 	for i, val in enumerate(neuron.inputs):
 
@@ -89,14 +71,11 @@ def set_actives(neuron):
 			#	j.receive_intercon([i])
 
 
-
 # interconnection
 
 def receive_intercon(neuron, received):
 	for idx in received:
 		mechanisms.scale_down_weight(neuron, idx, self.parameter.intercon_diminishing)
-
-		
 
 		# after a specific weight was diminished (because it was active on another connectron, all other weights get buffed)
 		#buff = self.input_weights[i] * (1 - self.parameter.intercon_diminishing) / len(self.input_weights)
@@ -107,8 +86,6 @@ def receive_intercon2(neuron, received):
 	for i in received:
 		
 		self.inhibited[i] = 0.1
-
-
 
 		# after a specific weight was diminished (because it was active on another connectron, all other weights get buffed)
 		#buff = self.input_weights[i] * (1 - self.parameter.intercon_diminishing) / len(self.input_weights)
@@ -125,9 +102,6 @@ def broadcast_intercon(self):
 
 # interesting ideas
 
-
 # remove dead weights
-
 # reshuffle (everything shitty for some time? reshuffle weights)
-
-# backpropagation?
+# backpropagation??

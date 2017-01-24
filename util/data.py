@@ -56,7 +56,9 @@ def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
 	for i in reversed(to_pop):
 		input_patterns.pop(i)
 
+
 	input_patterns = squares + list(reversed(input_patterns))
+	#input_patterns = list(reversed(input_patterns)) 			########################### USE THIS FOR SHITTY PATTERN
 
 	#chop to desired length
 	input_patterns = input_patterns[:number_of_patterns]

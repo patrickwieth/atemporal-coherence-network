@@ -11,6 +11,7 @@ from network import mechanisms
 
 class scheme:
 	def __init__(self):
+		self.parameters = {}
 		self.activation_phases = []
 		self.broadcast = []
 		self.receive = []
@@ -24,33 +25,56 @@ class scheme:
 		self.connect = connect
 		self.receive = receive
 
-	def set_mechanisms_by_dict(self, mechanisms_dict):
-		input_processing = mechanisms_dict['input_processing']
-		input_postprocessing = mechanisms_dict['input_postprocessing']
-		activation_preprocessing = mechanisms_dict['activation_preprocessing']
-		activation_processing = mechanisms_dict['activation_processing']
-		activation_postprocessing = mechanisms_dict['activation_postprocessing']
+	def integrate_schemes(self, schemes):
+		for x in schemes:
+			self.parameters.update(x.parameters)
 
-		self.set_activation_phases([input_processing, input_postprocessing, activation_preprocessing, activation_processing, activation_postprocessing])
-		self.set_broadcasting(mechanisms_dict['broadcast'], mechanisms_dict['receive'], mechanisms_dict['connect'])
+			self.broadcast += x.broadcast
+			self.receive += x.receive
+			self.connect += x.connect
 
-	
+			for idx, phase in enumerate(self.activation_phases):
+				phase += x.activation_phases[idx]
+
+	def set_mechanisms_by_list(self, mechanisms_list):
+		mechs = {
+		'input_processing': [],
+		'input_postprocessing': [],
+		'activation_preprocessing': [],
+		'activation_processing': [],
+		'activation_postprocessing': [],
+		'broadcast': [],
+		'receive': [],
+		'connect': []
+		}
+
+		for x in mechanisms_list:
+			mechs[x.phase] += [x.fn]
+
+			for y in x.parameters:
+				self.parameters[y['name']] = [y['lower_limit'], y['upper_limit']]
+
+		self.set_activation_phases([mechs['input_processing'], mechs['input_postprocessing'], mechs['activation_preprocessing'], mechs['activation_processing'], mechs['activation_postprocessing']])
+		self.set_broadcasting(mechs['broadcast'], mechs['receive'], mechs['connect'])
+
+
 
 ### BASE SCHEME ###
 base_scheme = scheme()
 
-input_processing = [mechanisms.add_weights_when_input_too_long, mechanisms.sum_up_input]
-input_postprocessing = [mechanisms.increase_weights_decrease_activation_on_weak_input,	mechanisms.define_unset_activation]
-activation_preprocessing = [mechanisms.empty_actives, mechanisms.input_intensity_by_abs_diff]
-activation_processing = [mechanisms.buff_activation_on_strong_input_nerv_on_weak_input]
-activation_postprocessing = []
+base_scheme.set_mechanisms_by_list([mechanisms.add_weights_when_input_too_long, 
+									mechanisms.sum_up_input,
+									mechanisms.increase_weights_decrease_activation_on_weak_input, 
+									mechanisms.define_unset_activation,
+									mechanisms.empty_actives, 
+									mechanisms.input_intensity_by_abs_diff,
+									mechanisms.buff_activation_on_strong_input_nerf_on_weak_input,
+									mechanisms.broadcast_intercon, 
+									mechanisms.receive_intercon, 
+									mechanisms.add_intercon])
 
-base_scheme.set_activation_phases([input_processing, input_postprocessing, activation_preprocessing, activation_processing, activation_postprocessing])
-base_scheme.set_broadcasting([mechanisms.broadcast_intercon], [mechanisms.receive_intercon], [mechanisms.add_intercon])
 
-
-
-# THESE SCHEMES ARE BULLSHIT:
+# THESE SCHEMES ARE BULLSHIT:  (think about turning into mechanisms)
 
 '''
 def set_actives(neuron):

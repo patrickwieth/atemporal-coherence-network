@@ -1,6 +1,8 @@
 import random
 import numpy as np
 
+DATA_LENGTH = 1000
+
 # creates sample data of recurring patterns and plain noise, the recurring patterns can also be given noise
 # data always starts with patterns and is followed by a corresponding amount of random data
 def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
@@ -62,8 +64,6 @@ def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
 
 	#chop to desired length
 	input_patterns = input_patterns[:number_of_patterns]
-	
-	print(input_patterns)
 
 	data = []
 
@@ -74,7 +74,7 @@ def patterns(number_of_patterns, percentage_of_random_data, noise_on_patterns):
 		for i in range(round(number_of_patterns*percentage_of_random_data/(1-percentage_of_random_data))):
 			push_random(data)
 
-	while(len(data) < 1000):
+	while(len(data) < DATA_LENGTH):
 		push_datum(data, input_patterns)		
 
 	return np.array(data)

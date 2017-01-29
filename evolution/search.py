@@ -4,16 +4,22 @@ from deap import creator, base, tools, algorithms
 import network
 import util
 
-
 class evolution:
-	def __init__(self, evaluation_function):
+	def __init__(self, evaluation_function, parameter_frame):
+
 		creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 		creator.create("Individual", list, fitness=creator.FitnessMax)
 
 		self.toolbox = base.Toolbox()
 
-		self.toolbox.register("attr_float", random.uniform, 0, 1)
-		self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_float, n=9)
+		# parameters are defined here
+		attributes = []
+
+		for key, value in parameter_frame.items():
+			self.toolbox.register(key, random.uniform, value[0], value[1])
+			attributes += [getattr(self.toolbox, key)]
+
+		self.toolbox.register("individual", tools.initCycle, creator.Individual, tuple(attributes), n=len(parameter_frame))
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
 		self.toolbox.register("evaluate", evaluation_function)

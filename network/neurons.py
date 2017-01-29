@@ -4,8 +4,8 @@ import random, math
 from network import schemes
 
 class connectron:
-	def __init__(self, parameter, schemes):
-		self.parameter = parameter
+	def __init__(self, parameter, scheme):
+		self.parameter = parameter.get_dict()
 		self.activation = 0
 		self.inputs = np.array([])
 		self.input_weights = np.array([])
@@ -16,15 +16,15 @@ class connectron:
 		self.interconnected = []
 		self.actives = []
 		self.stop_flag = False
-
 		
+
 		self.activation_phases = [[],[],[],[],[]]
 
 		self.broadcast_fns = []
 		self.connect_fns = []
 		self.receive_fns = []
 
-
+		'''
 		for s_idx, s in enumerate(schemes):
 			for activation_idx, fns in enumerate(s.activation_phases):
 				for fn in fns:
@@ -33,6 +33,14 @@ class connectron:
 			self.broadcast_fns = list(s.broadcast)
 			self.receive_fns = list(s.receive)
 			self.connect_fns = list(s.connect)
+		'''
+		for activation_idx, fns in enumerate(scheme.activation_phases):
+				for fn in fns:
+					self.activation_phases[activation_idx].append(fn)
+
+		self.broadcast_fns = list(scheme.broadcast)
+		self.receive_fns = list(scheme.receive)
+		self.connect_fns = list(scheme.connect)
 
 
 	def add_interconnection(self, connected):

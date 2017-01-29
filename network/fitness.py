@@ -30,6 +30,8 @@ def discrimination(matrix):
 	result = (np.sum(row_sums) + np.sum(col_sums)) / (len(row_sums) + len(col_sums))
 
 	if(result > 1):
-		print ("RESULT >1 bug!")
+		print ("RESULT >1 bug! set fitness to -1")
+		print (matrix)
+		return -1
 
 	return (np.sum(row_sums) + np.sum(col_sums)) / (len(row_sums) + len(col_sums))

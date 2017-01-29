@@ -15,6 +15,20 @@ class parameter:
 		#self.activation_scale_up = activation_adjustors[3]
 		self.intercon_diminishing = intercon_diminishing
 
+	def get_dict(self):
+		return {
+		'threshold': self.threshold,
+		'init_lower_weight': self.init_lower_weight,
+		'init_upper_weight': self.init_upper_weight,
+		'weight_buff': self.weight_buff,
+		'weight_nerf': self.weight_nerf,
+		'activation_buff': self.activation_buff,
+		'activation_nerf': self.activation_nerf,
+		'activation_scale_down': self.activation_scale_down,
+		'intercon_diminishing': self.intercon_diminishing
+		}
+
+
 class topology:
 	def __init__(self, size):
 		self.size = size
@@ -40,7 +54,6 @@ class instance:
 			for n in self.neurons:
 				n.broadcast()
 				
-
 	def test(self, input_data, iterations):
 		test_result = []
 		for n in self.neurons:
@@ -55,4 +68,3 @@ class instance:
 
 def flat_array_to_parameter(array):
 	return parameter(array[0], [array[1], array[2]], [array[3], array[4]], [array[5], array[6], array[7]], array[8])
-

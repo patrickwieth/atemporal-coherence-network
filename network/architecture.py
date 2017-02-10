@@ -2,6 +2,7 @@ import random
 from network import neurons
 from network import schemes
 
+'''
 class parameter:
 	def __init__(self, threshold, init_weight_bounds, weight_ajdustors, activation_adjustors, intercon_diminishing):
 		self.threshold = threshold
@@ -27,7 +28,7 @@ class parameter:
 		'activation_scale_down': self.activation_scale_down,
 		'intercon_diminishing': self.intercon_diminishing
 		}
-
+'''
 
 class topology:
 	def __init__(self, size):
@@ -65,6 +66,7 @@ class instance:
 
 		return test_result
 
-
+'''
 def flat_array_to_parameter(array):
 	return parameter(array[0], [array[1], array[2]], [array[3], array[4]], [array[5], array[6], array[7]], array[8])
+'''

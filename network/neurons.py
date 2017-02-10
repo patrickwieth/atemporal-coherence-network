@@ -5,7 +5,7 @@ from network import schemes
 
 class connectron:
 	def __init__(self, parameter, scheme):
-		self.parameter = parameter.get_dict()
+		self.parameter = parameter
 		self.activation = 0
 		self.inputs = np.array([])
 		self.input_weights = np.array([])
@@ -24,16 +24,6 @@ class connectron:
 		self.connect_fns = []
 		self.receive_fns = []
 
-		'''
-		for s_idx, s in enumerate(schemes):
-			for activation_idx, fns in enumerate(s.activation_phases):
-				for fn in fns:
-					self.activation_phases[activation_idx].append(fn)
-
-			self.broadcast_fns = list(s.broadcast)
-			self.receive_fns = list(s.receive)
-			self.connect_fns = list(s.connect)
-		'''
 		for activation_idx, fns in enumerate(scheme.activation_phases):
 				for fn in fns:
 					self.activation_phases[activation_idx].append(fn)

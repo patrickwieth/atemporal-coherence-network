@@ -16,16 +16,14 @@ rollit = creator.roll_dice()
 print("behavior:", rollit)
 
 behavior = [creator.create_scheme(rollit)]
-
-#behavior = [schemes.base_scheme]	# for base scheme usage, uncomment this
+behavior = [schemes.base_scheme]	# for base scheme usage, uncomment this
 
 
 def evalOneMax(individual):
-	params = network.architecture.flat_array_to_parameter(individual)
+	parameters = behavior.individual_to_parameter(individual)
 
-	topology = network.architecture.topology(number_of_neurons)
-	
-	net = network.architecture.instance(topology, behavior, params)
+	topology = network.architecture.topology(number_of_neurons)	
+	net = network.architecture.instance(topology, behavior, parameters)
 	net.run(data, 200)
 	result = net.test(data, number_of_neurons)
 
@@ -35,14 +33,14 @@ def merge_schemes(schemes):
 	if(len(schemes) > 1):
 		return schemes[0].integrate_schemes(schemes[1:])
 	else:
-		return schemes[0]		
+		return schemes[0]
 
 behavior = merge_schemes(behavior)
 
 print("number of parameters:", len(behavior.parameters))
+print(behavior.parameters)
 
-
-test1 = evolution.search.evolution(evalOneMax, behavior.parameters)
+test1 = evolution.search.evolution(evalOneMax, behavior.get_parameter_dict())
 
 seconds_to_go = 5
 running_for = 0
@@ -56,7 +54,6 @@ while running_for < seconds_to_go:
 	gen += 1
 	running_for = time.time() - start
 
-res = test1.get_best(10)
-print("performance of top 10", res[:,1])
+res = test1.get_best(5)
+print("performance of top 5", res[:,1])
 print("after", running_for, "seconds")
-

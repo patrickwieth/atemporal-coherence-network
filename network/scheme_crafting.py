@@ -20,6 +20,7 @@ class scheme_dice:
 		self.inclusive_optionals.append([mechanisms.define_unset_activation])
 		self.inclusive_optionals.append([mechanisms.empty_actives])
 		self.inclusive_optionals.append([mechanisms.input_intensity_by_abs_diff, mechanisms.buff_activation_on_strong_input_nerf_on_weak_input])
+		self.inclusive_optionals.append([mechanisms.input_intensity_by_abs_diff, mechanisms.scale_weights_on_strong_input_scale_down_activation_on_weak_input])
 		self.inclusive_optionals.append([mechanisms.do_nothing])
 
 

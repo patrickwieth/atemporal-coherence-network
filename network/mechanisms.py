@@ -78,7 +78,7 @@ def buff_weight_fn(neuron, idx):
 	neuron.input_weights[idx] += math.copysign(neuron.parameter['weight_buff'], neuron.input_weights[idx])
 
 buff_weight = mechanism('buff_weight', buff_weight_fn, 'none',
-						[{'name': 'buff_weight', 'type': np.float, 'lower_limit': 0, 'upper_limit': 1}])
+						[{'name': 'weight_buff', 'type': np.float, 'lower_limit': 0, 'upper_limit': 1}])
 
 
 def nerf_weight_fn(neuron, idx):
@@ -137,6 +137,27 @@ increase_weights_decrease_activation_on_weak_input = mechanism('increase_weights
 increase_weights_decrease_activation_on_weak_input.inherit_parameters(buff_weights_and_nerf_activation.pass_parameters())
 
 
+def scale_weights_depending_on_input_fn(neuron):
+
+	def scale_up_or_down(a):
+		if abs(a[0]*a[1]) > abs(neuron.input_mean):
+			a[0] *= 1 + neuron.parameter['weight_scale_up'] 
+		else:
+			a[0] *= 1 - neuron.parameter['weight_scale_down']
+		return a
+
+	# HIER WURDE SCHEISSE PROGRAMMIERT, SPEEDUP EXTRAHIEREN ufunc?
+	inputyes = np.array([neuron.input_weights, neuron.inputs]).T
+	#print(inputyes)
+	inputyes = np.array(list(map(scale_up_or_down, inputyes)))	
+	
+	neuron.input_weights = inputyes.T[0]
+
+scale_weights_depending_on_input = mechanism('scale_weights_depending_on_input', scale_weights_depending_on_input_fn, 'none',
+											[{'name': 'weight_scale_up', 'type': np.float, 'lower_limit': 0, 'upper_limit': 1},
+											 {'name': 'weight_scale_down', 'type': np.float, 'lower_limit': 0, 'upper_limit': 1}])
+
+
 def buff_or_nerf_depending_on_input_fn(neuron):
 	
 	def buff_or_nerf(a):
@@ -146,7 +167,7 @@ def buff_or_nerf_depending_on_input_fn(neuron):
 			a[0] -= math.copysign(neuron.parameter['weight_nerf'], a[0])
 		return a
 
-	# HIER WURDE SCHEISSE PROGRAMMIERT, SPEEDUP EXTRAHIEREN
+	# HIER WURDE SCHEISSE PROGRAMMIERT, SPEEDUP EXTRAHIEREN ufunc?
 	inputyes = np.array([neuron.input_weights, neuron.inputs]).T
 	#print(inputyes)
 	inputyes = np.array(list(map(buff_or_nerf, inputyes)))	
@@ -162,6 +183,7 @@ def input_intensity_by_abs_diff_fn(neuron):
 	neuron.input_intensity = abs(neuron.input_sum) - abs(neuron.activation)
 
 input_intensity_by_abs_diff = mechanism('input_intensity_by_abs_diff', input_intensity_by_abs_diff_fn, 'activation_preprocessing', [])
+
 
 # inhibtion
 
@@ -183,6 +205,7 @@ def set_actives_fn(neuron):
 			neuron.actives.append(i)
 
 set_actives = mechanism('set_actives', set_actives_fn, 'none', [])
+
 			
 # big mechanisms
 
@@ -201,6 +224,23 @@ buff_activation_on_strong_input_nerf_on_weak_input.inherit_parameters(buff_or_ne
 buff_activation_on_strong_input_nerf_on_weak_input.inherit_parameters(scale_down_activation.pass_parameters())
 buff_activation_on_strong_input_nerf_on_weak_input.inherit_parameters(buff_activation.pass_parameters())
 buff_activation_on_strong_input_nerf_on_weak_input.inherit_parameters(set_actives.pass_parameters())
+
+
+def scale_weights_on_strong_input_scale_down_activation_on_weak_input_fn(neuron):
+	if(neuron.input_intensity > 0):
+		# strong input
+		buff_activation.fn(neuron)
+		scale_weights_depending_on_input.fn(neuron)
+		set_actives.fn(neuron)
+	else:
+		# weak input
+		scale_down_activation.fn(neuron)
+
+scale_weights_on_strong_input_scale_down_activation_on_weak_input = mechanism('scale_weights_on_strong_input_scale_down_activation_on_weak_input', scale_weights_on_strong_input_scale_down_activation_on_weak_input_fn, 'activation_processing', [])
+scale_weights_on_strong_input_scale_down_activation_on_weak_input.inherit_parameters(scale_weights_depending_on_input.pass_parameters())
+scale_weights_on_strong_input_scale_down_activation_on_weak_input.inherit_parameters(scale_down_activation.pass_parameters())
+scale_weights_on_strong_input_scale_down_activation_on_weak_input.inherit_parameters(buff_activation.pass_parameters())
+scale_weights_on_strong_input_scale_down_activation_on_weak_input.inherit_parameters(set_actives.pass_parameters())
 
 
 # interconnection
@@ -231,18 +271,3 @@ def do_nothing_fn(neuron):
 
 do_nothing = mechanism('do_nothing', do_nothing_fn, 'activation_postprocessing', [])
 
-'''
-# order: name of mechanism, phase, needed parameters
-pool = {'weight_init1':	[add_weights_when_input_too_long, 'input_processing', ['init_lower_weight', 'init_upper_weight']],
-		'input_sum1':	[sum_up_input, 'input_processing', []],
-		'input_post1':	[increase_weights_decrease_activation_on_weak_input, 'input_postprocessing', ['threshold', 'activation_nerf', 'weight_buff']],
-		'input_post2':	[define_unset_activation, 'input_postprocessing', []],
-		'ac_pre1':		[empty_actives, 'activation_preprocessing', []],
-		'ac_pre2':		[input_intensity_by_abs_diff, 'activation_preprocessing', []],
-		'ac_pro1':		[buff_activation_on_strong_input_nerf_on_weak_input, 'activation_processing', ['activation_buff', 'activation_scale_down', 'weight_buff', 'weight_nerf']],
-		'ac_post1':		[do_nothing, 'activation_postprocessing', []],		
-		'brc1':			[broadcast_intercon, 'broadcast', ['intercon_diminishing']],
-		'rcv1':			[receive_intercon, 'receive', ['intercon_diminishing']],
-		'con1':			[add_intercon, 'connect', []]
-		}
-'''

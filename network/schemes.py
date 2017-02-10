@@ -11,7 +11,7 @@ from network import mechanisms
 
 class scheme:
 	def __init__(self):
-		self.parameters = {}
+		self.parameters = []
 		self.activation_phases = []
 		self.broadcast = []
 		self.receive = []
@@ -48,15 +48,30 @@ class scheme:
 		'connect': []
 		}
 
+		self.parameters = []
+
 		for x in mechanisms_list:
 			mechs[x.phase] += [x.fn]
 
 			for y in x.parameters:
-				self.parameters[y['name']] = [y['lower_limit'], y['upper_limit']]
+				self.parameters.append([ y['lower_limit'], y['upper_limit'], y['name'] ])
 
 		self.set_activation_phases([mechs['input_processing'], mechs['input_postprocessing'], mechs['activation_preprocessing'], mechs['activation_processing'], mechs['activation_postprocessing']])
 		self.set_broadcasting(mechs['broadcast'], mechs['receive'], mechs['connect'])
 
+	def individual_to_parameter(self, individual):
+		parameter_dict = {}
+
+		for idx, param in enumerate(self.parameters):
+			parameter_dict[param[2]] = individual[idx]
+
+		return parameter_dict
+
+	def get_parameter_dict(self):
+		param_dict = {}
+		for x in self.parameters:
+			param_dict[x[2]] = [x[0], x[1]]
+		return param_dict
 
 
 ### BASE SCHEME ###
@@ -68,7 +83,7 @@ base_scheme.set_mechanisms_by_list([mechanisms.add_weights_when_input_too_long,
 									mechanisms.define_unset_activation,
 									mechanisms.empty_actives, 
 									mechanisms.input_intensity_by_abs_diff,
-									mechanisms.buff_activation_on_strong_input_nerf_on_weak_input,
+									mechanisms.scale_weights_on_strong_input_scale_down_activation_on_weak_input,
 									mechanisms.broadcast_intercon, 
 									mechanisms.receive_intercon, 
 									mechanisms.add_intercon])
@@ -116,16 +131,10 @@ def receive_intercon2(neuron, received):
 		#for j in self.input_weights:
 		#	j += buff
 
-def broadcast_intercon(self):	
-	# intercon scheme 2
-	#return 1
-
-	for i in self.interconnected:
-		i.receive_intercon(self.actives)
-'''
 
 # interesting ideas
 
 # remove dead weights
 # reshuffle (everything shitty for some time? reshuffle weights)
 # backpropagation??
+'''

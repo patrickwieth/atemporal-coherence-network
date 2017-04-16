@@ -28,7 +28,7 @@ class hall_of_fame:
 				last = x
 				x = individuum
 
-		#print(len(self.individuals), self.number_of_individuals)
+		print("individuals:", len(self.individuals), "max:", self.number_of_individuals)
 		if not superior and len(self.individuals) < int(self.number_of_individuals):
 			self.individuals.append(individuum)
 
@@ -38,9 +38,10 @@ class hall_of_fame:
 		np.save('results/hall_of_'+self.name+'.npy', data)
 
 def load(name):
-	number_of_individuals = 5
+	
 
 	if os.path.isfile('results/hall_of_'+name+'.npy') == False:
+		number_of_individuals = 5
 		new_hall = hall_of_fame(name, "fresh hall of fame", number_of_individuals)
 		new_hall.save()
 		return new_hall

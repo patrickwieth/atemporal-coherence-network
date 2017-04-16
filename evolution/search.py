@@ -19,7 +19,7 @@ class evolution:
 			self.toolbox.register(key, random.uniform, value[0], value[1])
 			attributes += [getattr(self.toolbox, key)]
 
-		self.toolbox.register("individual", tools.initCycle, creator.Individual, tuple(attributes), n=len(parameter_frame))
+		self.toolbox.register("individual", tools.initCycle, creator.Individual, tuple(attributes), n=1)
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
 		self.toolbox.register("evaluate", evaluation_function)
@@ -39,6 +39,7 @@ class evolution:
 
 	def get_best(self, count):
 		top = tools.selBest(self.population, k=count)
+		
 		fitnesses = list(map(self.toolbox.evaluate, top))
 		result = np.array(list(zip(top, [f[0] for f in fitnesses])))
 

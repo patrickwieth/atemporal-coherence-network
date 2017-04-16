@@ -7,12 +7,16 @@ import math
 # A scheme can use a mechanism, where the whole set of mechanisms makes up the behavior of a neuron 	#
 #########################################################################################################
 
+registered = {}
+
 class mechanism:
 	def __init__(self, name, fn, phase, parameters):
 		self.name = name
 		self.fn = fn
 		self.phase = phase
 		self.parameters = parameters
+
+		registered[name] = self
 
 	def inherit_parameters(self, params):
 		self.parameters += params

@@ -19,7 +19,7 @@ class scheme_dice:
 		self.inclusive_optionals.append([mechanisms.increase_weights_decrease_activation_on_weak_input])
 		self.inclusive_optionals.append([mechanisms.define_unset_activation])
 		self.inclusive_optionals.append([mechanisms.empty_actives])
-		self.inclusive_optionals.append([mechanisms.input_intensity_by_abs_diff, mechanisms.buff_activation_on_strong_input_nerf_on_weak_input])
+		#self.inclusive_optionals.append([mechanisms.input_intensity_by_abs_diff, mechanisms.buff_activation_on_strong_input_nerf_on_weak_input]) # crashes
 		self.inclusive_optionals.append([mechanisms.input_intensity_by_abs_diff, mechanisms.scale_weights_on_strong_input_scale_down_activation_on_weak_input])
 		self.inclusive_optionals.append([mechanisms.do_nothing])
 
@@ -45,3 +45,17 @@ class scheme_dice:
 		new_scheme.set_mechanisms_by_list(selected_mechanisms)
 
 		return new_scheme
+
+	def mechanisms_to_genes(self, rolled_dice):
+		new_scheme = schemes.scheme()
+
+		selected_mechanisms = []
+
+		for idx, val in enumerate(rolled_dice['optionals']):
+			if(val == 1):
+				selected_mechanisms += [x.name for x in self.inclusive_optionals[idx]]
+
+		for idx, val in enumerate(rolled_dice['must_haves']):
+			selected_mechanisms.append(self.exclusive_must_haves[idx][val-1].name)
+
+		return selected_mechanisms

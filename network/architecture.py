@@ -2,34 +2,6 @@ import random
 from network import neurons
 from network import schemes
 
-'''
-class parameter:
-	def __init__(self, threshold, init_weight_bounds, weight_ajdustors, activation_adjustors, intercon_diminishing):
-		self.threshold = threshold
-		self.init_lower_weight = init_weight_bounds[0]
-		self.init_upper_weight = init_weight_bounds[1]
-		self.weight_buff = weight_ajdustors[0]
-		self.weight_nerf = weight_ajdustors[1]
-		self.activation_buff = activation_adjustors[0]
-		self.activation_nerf = activation_adjustors[1]
-		self.activation_scale_down = activation_adjustors[2]
-		#self.activation_scale_up = activation_adjustors[3]
-		self.intercon_diminishing = intercon_diminishing
-
-	def get_dict(self):
-		return {
-		'threshold': self.threshold,
-		'init_lower_weight': self.init_lower_weight,
-		'init_upper_weight': self.init_upper_weight,
-		'weight_buff': self.weight_buff,
-		'weight_nerf': self.weight_nerf,
-		'activation_buff': self.activation_buff,
-		'activation_nerf': self.activation_nerf,
-		'activation_scale_down': self.activation_scale_down,
-		'intercon_diminishing': self.intercon_diminishing
-		}
-'''
-
 class topology:
 	def __init__(self, size):
 		self.size = size
@@ -65,8 +37,3 @@ class instance:
 			test_result.append(neuron_activation)
 
 		return test_result
-
-'''
-def flat_array_to_parameter(array):
-	return parameter(array[0], [array[1], array[2]], [array[3], array[4]], [array[5], array[6], array[7]], array[8])
-'''
